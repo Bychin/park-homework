@@ -1,8 +1,32 @@
 import os
 import sys
 import random
-import msvcrt
+#import msvcrt
 #from tty import msvcrt
+
+def _find_getch():
+    try:
+        import termios
+    except ImportError:
+        # Non-POSIX. Return msvcrt's (Windows') getch.
+        import msvcrt
+        return msvcrt.getch
+
+    # POSIX system. Create and return a getch that manipulates the tty.
+    import sys, tty
+    def _getch():
+        fd = sys.stdin.fileno()
+        old_settings = termios.tcgetattr(fd)
+        try:
+            tty.setraw(fd)
+            ch = sys.stdin.read(1)
+        finally:
+            termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
+        return ch
+
+    return _getch
+
+getch = _find_getch()
 
 def _exit():
     os.system("cls") #clear
@@ -11,7 +35,8 @@ def _exit():
 
 def _return_to_main():
     print("\nPress any key to return to the main menu...")
-    in_ch = ord(msvcrt.getch())
+    #in_ch = ord(msvcrt.getch())
+    in_ch = ord(getch())
     if in_ch != None:
         os.system("cls") #clear
         #continue
@@ -29,7 +54,8 @@ if __name__ == "__main__":
         print("3) Change teams")
         print("4) Exit")
 
-        in_ch = ord(msvcrt.getch())
+        #in_ch = ord(msvcrt.getch())
+        in_ch = ord(getch())
         print(in_ch)
 
         if in_ch == 49: # 1) Play!
@@ -90,7 +116,8 @@ if __name__ == "__main__":
         elif in_ch == 51: # 3) Change teams
             os.system("cls") #clear
             print("Warning: next steps will delete all previous data!\nContinue? [Y/N]")
-            in_ch = ord(msvcrt.getch())
+            #in_ch = ord(msvcrt.getch())
+            in_ch = ord(getch())
 
             if in_ch == 89 or in_ch == 121:
 
