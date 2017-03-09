@@ -11,7 +11,7 @@ def _find_getch():
         return msvcrt.getch
 
     # POSIX system. Create and return a getch that manipulates the tty.
-    import sys, tty
+    import tty
     def _getch():
         fd = sys.stdin.fileno()
         old_settings = termios.tcgetattr(fd)
@@ -38,9 +38,6 @@ def _return_to_main():
     else:
         _exit()
 
-def _stage_info(stage):
-    pass
-
 if __name__ == "__main__":
     os.system("clear")
     print("Welcome to the Champions League!\n")
@@ -57,13 +54,16 @@ if __name__ == "__main__":
 
         if in_ch == 49: # 1) Play!
             os.system("clear")
-            file = open("commands_list.txt", "r+")
             random.seed()
+            file = open("commands_list.txt", "r")
             team_list = set()
             tmp_teams = set()
             for line in file:
+                if (line == "\n"):
+                    continue
                 team_list.add(line[:-1])
                 tmp_teams.add(line[:-1])
+
             file.close()
 
             stage = 8
@@ -85,8 +85,6 @@ if __name__ == "__main__":
 
                     score_left = random.randint(0, 6)
                     score_right = random.randint(0, 6)
-                    while (score_left == score_right):
-                        score_right = random.randint(0, 6)
 
                     file.write("{} vs {}: {} - {}\n".format(left_side, right_side,
                                                             score_left, score_right))
@@ -94,8 +92,20 @@ if __name__ == "__main__":
                                                      score_left, score_right))
                     if score_left > score_right:
                         tmp_teams.remove(right_side)
-                    else:
+                    elif score_left < score_right:
                         tmp_teams.remove(left_side)
+                    else:
+                        pen_score_left = random.randint(0, 6)
+                        pen_score_right = random.randint(0, 6)
+                        while (pen_score_left == pen_score_right):
+                            pen_score_right = random.randint(0, 6)
+                        file.write("(Penalty: {} - {})\n".format(pen_score_left, pen_score_right))
+                        print("(Penalty: {} - {})".format(pen_score_left, pen_score_right)) 
+
+                        if pen_score_left > pen_score_right:
+                            tmp_teams.remove(right_side)
+                        elif pen_score_left < pen_score_right:
+                            tmp_teams.remove(left_side)
 
                 team_list.update(tmp_teams)
                 stage //= 2
@@ -112,7 +122,13 @@ if __name__ == "__main__":
                 file = open("history.txt", "r")
                 tmp_tuple = tuple(file.readlines())
                 stg = 8
+                key_check = False #for penalties
                 for line in tmp_tuple:
+                    if key_check == True and "Penalty" in line:
+                        print("{}".format(str(line[:-1])))
+                        key_check = False
+                    else:
+                        key_check = False
                     if team_name in str(line):
                         if stg == 1:
                             print("Final: {}".format(str(line[:-1])))
@@ -121,6 +137,7 @@ if __name__ == "__main__":
                         else:
                             print("Stage 1/{}: {}".format(stg, str(line[:-1])))
                         stg //= 2
+                        key_check = True
                 
                 if stg == 8:
                     print("No such team!")
