@@ -26,7 +26,7 @@ def _find_getch():
 getch = _find_getch()
 
 def _exit():
-    os.system("cls") #clear
+    os.system("clear") 
     print("Goodbye!")
     sys.exit()
 
@@ -34,11 +34,15 @@ def _return_to_main():
     print("\nPress any key to return to the main menu...")
     in_ch = ord(getch())
     if in_ch != None:
-        os.system("cls") #clear
+        os.system("clear") 
     else:
         _exit()
 
+def _stage_info(stage):
+    pass
+
 if __name__ == "__main__":
+    os.system("clear")
     print("Welcome to the Champions League!\n")
     
 
@@ -52,13 +56,13 @@ if __name__ == "__main__":
         in_ch = ord(getch())
 
         if in_ch == 49: # 1) Play!
-            os.system("cls") #clear
+            os.system("clear")
+            file = open("commands_list.txt", "r+")
             random.seed()
-            team_list = []
+            team_list = set()
             tmp_teams = set()
-            file = open("commands_list.txt", "r")
             for line in file:
-                team_list.append(line[:-1])
+                team_list.add(line[:-1])
                 tmp_teams.add(line[:-1])
             file.close()
 
@@ -67,72 +71,68 @@ if __name__ == "__main__":
 
             while stage >= 1:
 
-                numb_list = [l for l in range(16)] # for random
-                print(("---Stage {}---\n".format(stage)))
-                file.write("---Stage {}---\n".format(stage))
-                left_side = []
-                right_side = []
+                if stage != 1:
+                    print("\n---Stage 1/{}---\n".format(stage))
+                    file.write("---Stage 1/{}---\n".format(stage))
+                else:
+                    print("\n---Final---\n")
+                    file.write("---Final---\n")
 
                 for i in range(stage):
 
-                    idx1 = random.choice(numb_list)
-                    while (team_list[idx1] == "-"):
-                        idx1 = random.choice(numb_list)
-                    numb_list.remove(idx1)
-
-                    idx2 = random.choice(numb_list)
-                    while (team_list[idx2] == "-"):
-                        idx2 = random.choice(numb_list)
-                    numb_list.remove(idx2)
-
-    
-                    left_side.append(team_list[idx1])
-                    right_side.append(team_list[idx2])
+                    left_side = team_list.pop()
+                    right_side = team_list.pop()
 
                     score_left = random.randint(0, 6)
                     score_right = random.randint(0, 6)
                     while (score_left == score_right):
                         score_right = random.randint(0, 6)
 
-                    file.write("{} vs {}: {} - {}\n".format(left_side[i], right_side[i],
-                                                          score_left, score_right))
-                    print("{} vs {}: {} - {}\n".format(left_side[i], right_side[i],
-                                                       score_left, score_right))
+                    file.write("{} vs {}: {} - {}\n".format(left_side, right_side,
+                                                            score_left, score_right))
+                    print("{} vs {}: {} - {}".format(left_side, right_side,
+                                                     score_left, score_right))
                     if score_left > score_right:
-                        team_list[idx2] = "-"
+                        tmp_teams.remove(right_side)
                     else:
-                        team_list[idx1] = "-"
+                        tmp_teams.remove(left_side)
 
+                team_list.update(tmp_teams)
                 stage //= 2
 
+            print("\n{} won the competition!!!".format(team_list.pop()))
+            file.write("\n{} is the winner!".format(tmp_teams.pop()))
             file.close()
 
-            print("Do you want to see the path of a particular team? [Y/N]")
+            print("\nDo you want to see the path of a particular team? [Y/N]")
             in_ch = ord(getch())
             while in_ch == 89 or in_ch == 121:
                 team_name = input("Enter team's name: ")
 
-                if team_name in tmp_teams:
-                    file = open("history.txt", "r")
-                    team_list = tuple(file.readlines())
-                    stg = 8
-                    for str in team_list:
-                        if team_name in str:
-                            print("Stage {}: {}".format(stg, str[:-1]))
-                            stg //= 2
-                    file.close()
+                file = open("history.txt", "r")
+                tmp_tuple = tuple(file.readlines())
+                stg = 8
+                for line in tmp_tuple:
+                    if team_name in str(line):
+                        if stg == 1:
+                            print("Final: {}".format(str(line[:-1])))
+                        elif stg == 0:
+                            print(str(line[:-1]))
+                        else:
+                            print("Stage 1/{}: {}".format(stg, str(line[:-1])))
+                        stg //= 2
                 
-                else:
+                if stg == 8:
                     print("No such team!")
                 print("Do you want to see more? [Y/N]")
                 in_ch = ord(getch())
-            os.system("cls") #clear
+                file.close()
+            os.system("clear") 
 
         elif in_ch == 50: # 2) Show all teams
-            os.system("cls") #clear
+            os.system("clear") 
             file = open("commands_list.txt", "r")
-            team_list = tuple(file.readlines())
-            for team in team_list:
+            for team in file:
                 print(team[:-1])
             file.close()
 
@@ -140,13 +140,13 @@ if __name__ == "__main__":
             
 
         elif in_ch == 51: # 3) Change teams
-            os.system("cls") #clear
+            os.system("clear") 
             print("Warning: next steps will delete all previous data!\nContinue? [Y/N]")
             in_ch = ord(getch())
 
             if in_ch == 89 or in_ch == 121:
 
-                os.system("cls") #clear
+                os.system("clear") 
                 print("Your must enter 16 teams in total:\n")
 
                 file = open("commands_list.txt", "w")
@@ -159,11 +159,10 @@ if __name__ == "__main__":
                 _return_to_main()
 
             else:
-                os.system("cls") #clear
+                os.system("clear") 
 
         elif in_ch == 52: # 4) Exit
             _exit()
 
         else:
-            os.system("cls") #clear
-        
+            os.system("clear")
