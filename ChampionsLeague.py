@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
         in_ch = ord(getch())
 
-        if in_ch == 49: # 1) Play!
+        if in_ch == 49: # 1) Play! (49 == '1')
             os.system("clear")
             random.seed()
             file = open("commands_list.txt", "r")
@@ -116,7 +116,7 @@ if __name__ == "__main__":
 
             print("\nDo you want to see the path of a particular team? [Y/N]")
             in_ch = ord(getch())
-            while in_ch == 89 or in_ch == 121:
+            while in_ch == 89 or in_ch == 121: # (89 == 'y', 121 == 'Y')
                 team_name = input("Enter team's name: ")
 
                 file = open("history.txt", "r")
@@ -146,7 +146,7 @@ if __name__ == "__main__":
                 file.close()
             os.system("clear") 
 
-        elif in_ch == 50: # 2) Show all teams
+        elif in_ch == 50: # 2) Show all teams (50 == '2')
             os.system("clear") 
             file = open("commands_list.txt", "r")
             for team in file:
@@ -161,7 +161,7 @@ if __name__ == "__main__":
             print("Warning: next steps will delete all previous data!\nContinue? [Y/N]")
             in_ch = ord(getch())
 
-            if in_ch == 89 or in_ch == 121:
+            if in_ch == 89 or in_ch == 121: # (89 == 'y', 121 == 'Y')
 
                 os.system("clear") 
                 print("Your must enter 16 teams in total:\n")
@@ -178,7 +178,7 @@ if __name__ == "__main__":
             else:
                 os.system("clear") 
 
-        elif in_ch == 52: # 4) Exit
+        elif in_ch == 52: # 4) Exit (52 == '4')
             _exit()
 
         else:
