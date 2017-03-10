@@ -2,6 +2,7 @@ import os
 import sys
 import random
 
+
 def _find_getch():
     try:
         import termios
@@ -25,10 +26,12 @@ def _find_getch():
     return _getch
 getch = _find_getch()
 
+
 def _exit():
     os.system("clear") 
     print("Goodbye!")
     sys.exit()
+
 
 def _return_to_main():
     print("\nPress any key to return to the main menu...")
@@ -37,6 +40,50 @@ def _return_to_main():
         os.system("clear") 
     else:
         _exit()
+
+
+def _stage_play(stg):
+    while stg >= 1:
+
+        if stg != 1:
+            print("\n---Stage 1/{}---\n".format(stg))
+            file.write("---Stage 1/{}---\n".format(stg))
+        else:
+            print("\n---Final---\n")
+            file.write("---Final---\n")
+
+        for i in range(stg):
+
+            left_side = team_list.pop()
+            right_side = team_list.pop()
+
+            score_left = random.randint(0, 6)
+            score_right = random.randint(0, 6)
+
+            file.write("{} vs {}: {} - {}\n".format(left_side, right_side,
+                                                    score_left, score_right))
+            print("{} vs {}: {} - {}".format(left_side, right_side,
+                                             score_left, score_right))
+            if score_left > score_right:
+                tmp_teams.remove(right_side)
+            elif score_left < score_right:
+                tmp_teams.remove(left_side)
+            else:
+                pen_score_left = random.randint(0, 6)
+                pen_score_right = random.randint(0, 6)
+                while (pen_score_left == pen_score_right):
+                    pen_score_right = random.randint(0, 6)
+                file.write("(Penalty: {} - {})\n".format(pen_score_left, pen_score_right))
+                print("(Penalty: {} - {})".format(pen_score_left, pen_score_right)) 
+
+                if pen_score_left > pen_score_right:
+                    tmp_teams.remove(right_side)
+                elif pen_score_left < pen_score_right:
+                    tmp_teams.remove(left_side)
+
+            team_list.update(tmp_teams)
+            stg //= 2
+
 
 if __name__ == "__main__":
     os.system("clear")
@@ -69,46 +116,7 @@ if __name__ == "__main__":
             stage = 8
             file = open("history.txt", "w")
 
-            while stage >= 1:
-
-                if stage != 1:
-                    print("\n---Stage 1/{}---\n".format(stage))
-                    file.write("---Stage 1/{}---\n".format(stage))
-                else:
-                    print("\n---Final---\n")
-                    file.write("---Final---\n")
-
-                for i in range(stage):
-
-                    left_side = team_list.pop()
-                    right_side = team_list.pop()
-
-                    score_left = random.randint(0, 6)
-                    score_right = random.randint(0, 6)
-
-                    file.write("{} vs {}: {} - {}\n".format(left_side, right_side,
-                                                            score_left, score_right))
-                    print("{} vs {}: {} - {}".format(left_side, right_side,
-                                                     score_left, score_right))
-                    if score_left > score_right:
-                        tmp_teams.remove(right_side)
-                    elif score_left < score_right:
-                        tmp_teams.remove(left_side)
-                    else:
-                        pen_score_left = random.randint(0, 6)
-                        pen_score_right = random.randint(0, 6)
-                        while (pen_score_left == pen_score_right):
-                            pen_score_right = random.randint(0, 6)
-                        file.write("(Penalty: {} - {})\n".format(pen_score_left, pen_score_right))
-                        print("(Penalty: {} - {})".format(pen_score_left, pen_score_right)) 
-
-                        if pen_score_left > pen_score_right:
-                            tmp_teams.remove(right_side)
-                        elif pen_score_left < pen_score_right:
-                            tmp_teams.remove(left_side)
-
-                team_list.update(tmp_teams)
-                stage //= 2
+            _stage_play(stage)
 
             print("\n{} won the competition!!!".format(team_list.pop()))
             file.write("\n{} is the winner!".format(tmp_teams.pop()))
